@@ -1,10 +1,11 @@
-package pipe
+package examples
 
 import (
 	"fmt"
 	"path/filepath"
 	"strings"
 
+	"github.com/ezian/pipe"
 	"github.com/panjf2000/ants/v2"
 	"github.com/samber/lo"
 )
@@ -49,8 +50,8 @@ func mockMerge[Parent, Child any](parent Parent, out <-chan Child) Parent {
 
 // Engine defines the engine
 type Engine struct {
-	pool *Pools
-	proc PoolProcess[Job]
+	pool *pipe.Pools
+	proc pipe.PoolProcess[Job]
 }
 
 // Job defines the parent job. It will be dispatched in several subjob. It is defined here as an interface for convenience but could be of any type.
@@ -63,9 +64,9 @@ type SubJob struct{}
 
 // JobBuilder defines the base builder for the whole engine
 type JobBuilder struct {
-	preproc    []Process[Job]
-	dispatched *PoolProcess[Job]
-	postproc   []Process[Job]
+	preproc    []pipe.Process[Job]
+	dispatched *pipe.PoolProcess[Job]
+	postproc   []pipe.Process[Job]
 	poolSizes  []int
 	poolOpts   []ants.Option
 }
@@ -73,8 +74,8 @@ type JobBuilder struct {
 // SubJobBuilder defines a builder which build subpipeline
 type SubJobBuilder struct {
 	parent *JobBuilder
-	split  Split[Job, SubJob]
-	procs  []Process[SubJob]
+	split  pipe.Split[Job, SubJob]
+	procs  []pipe.Process[SubJob]
 }
 
 // PoolSizes defines the poolsize for the underlying pools
@@ -93,7 +94,7 @@ func (b *JobBuilder) PoolOpts(opts ...ants.Option) *JobBuilder {
 }
 
 // Processor add a processor. If a dispatcher has been defined, it will add the processor after the dispatcher
-func (b *JobBuilder) Processor(proc Process[Job]) *JobBuilder {
+func (b *JobBuilder) Processor(proc pipe.Process[Job]) *JobBuilder {
 	if b.dispatched == nil {
 		b.preproc = append(b.preproc, proc)
 	} else {
@@ -103,23 +104,23 @@ func (b *JobBuilder) Processor(proc Process[Job]) *JobBuilder {
 }
 
 // Split initializes the split function from Job to Subjob
-func (b *JobBuilder) Split(split Split[Job, SubJob]) *SubJobBuilder {
+func (b *JobBuilder) Split(split pipe.Split[Job, SubJob]) *SubJobBuilder {
 	return &SubJobBuilder{parent: b, split: split}
 }
 
 // Processor add a processor to subjob pipeline
-func (b *SubJobBuilder) Processor(proc Process[SubJob]) *SubJobBuilder {
+func (b *SubJobBuilder) Processor(proc pipe.Process[SubJob]) *SubJobBuilder {
 	b.procs = append(b.procs, proc)
 	return b
 }
 
 // Merge initializes the merge function from Subjob to Job
-func (b *SubJobBuilder) Merge(merge Merge[Job, SubJob]) *JobBuilder {
-	dispatcher, err := NewDispatch(b.split, merge)
+func (b *SubJobBuilder) Merge(merge pipe.Merge[Job, SubJob]) *JobBuilder {
+	dispatcher, err := pipe.NewDispatch(b.split, merge)
 	if err != nil {
 		panic(err) // Or handle the error by collecting them in parent...
 	}
-	b.parent.dispatched = lo.ToPtr(Wrap(Link(AsPoolProcesses(b.procs...)...), dispatcher))
+	b.parent.dispatched = lo.ToPtr(pipe.Wrap(pipe.Link(pipe.AsPoolProcesses(b.procs...)...), dispatcher))
 	return b.parent
 }
 
@@ -128,13 +129,13 @@ func (b *JobBuilder) Build() *Engine {
 	if b.dispatched == nil {
 		panic("no dispatcher") // Or handle the errors properly ;)
 	}
-	pool, err := NewPoolsWithOptions(b.poolSizes, b.poolOpts...)
+	pool, err := pipe.NewPoolsWithOptions(b.poolSizes, b.poolOpts...)
 	if err != nil {
 		panic(err) // Or handle the errors properly ;)
 	}
 	return &Engine{
 		pool: pool,
-		proc: Link(Link(AsPoolProcesses(b.preproc...)...), *b.dispatched, Link(AsPoolProcesses(b.postproc...)...)),
+		proc: pipe.Link(pipe.Link(pipe.AsPoolProcesses(b.preproc...)...), *b.dispatched, pipe.Link(pipe.AsPoolProcesses(b.postproc...)...)),
 	}
 }
 
@@ -145,7 +146,7 @@ func NewEngineBuilder() *JobBuilder {
 
 // Run runs the engine... VROOOOOOOOOOOOOOOOOOOOOOOMMMMMMM !!!
 func (e *Engine) Run(in <-chan Job) {
-	Run(e.pool, in, e.proc)
+	pipe.Run(e.pool, in, e.proc)
 }
 
 func ExampleEngine() {
