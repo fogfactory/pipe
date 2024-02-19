@@ -1,6 +1,7 @@
 package pipe_test
 
 import (
+	"sync"
 	"testing"
 	"time"
 
@@ -26,8 +27,9 @@ func TestProcesses(t *testing.T) {
 
 	t.Run("panic_invalid_dispatcher", func(t *testing.T) {
 		// Arrange
+		var mutex sync.Mutex
 		var panicResult any
-		pool := InitPoolWithOptions(t, []int{1}, ants.WithPanicHandler(func(i interface{}) { panicResult = i }))
+		pool := InitPoolWithOptions(t, []int{1}, ants.WithPanicHandler(func(i interface{}) { mutex.Lock(); defer mutex.Unlock(); panicResult = i }))
 		input := lo.Range(10)
 		in := lo.SliceToChannel(0, input)
 		mainProc := func(_ *pipe.Pools, i int) int { return i }
@@ -43,6 +45,8 @@ func TestProcesses(t *testing.T) {
 		pipe.Run(pool, in, mainProc)
 
 		// Assert
+		mutex.Lock()
+		defer mutex.Unlock()
 		td.CmpContains(t, panicResult, "invalid dispatcher merge int into int, leaked goroutine")
 	})
 
