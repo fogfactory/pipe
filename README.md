@@ -1,14 +1,9 @@
-<p align="center">
-<h1>pipe</h1>
-<b>A multi pool pipeline for heavy multiprocessing in golang</b>
-<br/><br/>
-<a title="Build Status" target="_blank" href="https://github.com/Ezian/pipe/actions?query=workflow%3ATests"><img src="https://img.shields.io/github/actions/workflow/status/Ezian/pipe/test.yml?branch=master&style=flat-square&logo=github-actions" /></a>
-<a href="https://codecov.io/gh/Ezian/pipe" ><img src="https://codecov.io/gh/Ezian/pipe/graph/badge.svg?token=TPB68RCES0"/></a>
-<a title="Go Report Card" target="_blank" href="https://goreportcard.com/report/github.com/Ezian/pipe"><img src="https://goreportcard.com/badge/github.com/Ezian/pipe?style=flat-square" /></a>
-<!-- <a title="Doc for pipe" target="_blank" href="https://pkg.go.dev/github.com/Ezian/pipe/v2?tab=doc"><img src="https://img.shields.io/badge/go.dev-doc-007d9c?style=flat-square&logo=read-the-docs" /></a> -->
-<!--<a title="Mentioned in Awesome Go" target="_blank" href="https://github.com/avelino/awesome-go#goroutines"><img src="https://awesome.re/mentioned-badge-flat.svg" /></a>-->
-</p>
+# pipe
+**A multi pool pipeline for heavy multiprocessing in golang****
 
+[![Run tests](https://github.com/Ezian/pipe/actions/workflows/test.yml/badge.svg)](https://github.com/Ezian/pipe/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/Ezian/pipe/graph/badge.svg?token=TPB68RCES0)](https://codecov.io/gh/Ezian/pipe)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Ezian/pipe)](https://goreportcard.com/report/github.com/Ezian/pipe)
 
 ## Introduction
 
