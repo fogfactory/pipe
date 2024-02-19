@@ -12,7 +12,7 @@ type Pools struct {
 	pools []*ants.Pool
 }
 
-// Release releases all the pools inside the pools
+// Release releases all the pools inside the pools.
 func (p *Pools) Release() {
 	for _, p := range p.pools {
 		if p == nil {
@@ -24,7 +24,7 @@ func (p *Pools) Release() {
 
 // NewPoolsWithOptions builds a depth pools with the size in parameters. If there is no size, no pools will be created. Submit will not run in parallel.
 //
-// Moreover, a size of 0 means that the task pushed at this level will run in their parent routine (or alike)
+// Moreover, a size of 0 means that the task pushed at this level will run in their parent routine (or alike).
 func NewPoolsWithOptions(poolSizes []int, opts ...ants.Option) (*Pools, error) {
 	var err error
 	result := &Pools{
@@ -45,14 +45,13 @@ func NewPoolsWithOptions(poolSizes []int, opts ...ants.Option) (*Pools, error) {
 	return result, nil
 }
 
-// NewPools builds a depth pools with the size in parameters. If there is no size, no pools will be created. Submit will not run in parallel
+// NewPools builds a depth pools with the size in parameters. If there is no size, no pools will be created. Submit will not run in parallel.
 func NewPools(poolSizes ...int) (*Pools, error) {
 	return NewPoolsWithOptions(poolSizes)
 }
 
-// Pipe allows to Pipe a channel in and out in the depth pool. It will execute the task in the current pool and pass the next level pool to the child task
+// Pipe allows to Pipe a channel in and out in the depth pool. It will execute the task in the current pool and pass the next level pool to the child task.
 func Pipe[IN, OUT any](dp *Pools, in <-chan IN, do func(*Pools, IN) OUT) <-chan OUT {
-
 	out := make(chan OUT)
 
 	go func() {
@@ -73,7 +72,7 @@ func Pipe[IN, OUT any](dp *Pools, in <-chan IN, do func(*Pools, IN) OUT) <-chan 
 	return out
 }
 
-// submit submits a task to the pools. if the remaining pools are empty, it is blocking until the task complete
+// submit submits a task to the pools. if the remaining pools are empty, it is blocking until the task complete.
 func (p *Pools) submit(f func(*Pools)) {
 	if p == nil || len(p.pools) == 0 {
 		f(p) // If there is no more available pools or no pool at all, just do it in current routine thread
@@ -85,5 +84,9 @@ func (p *Pools) submit(f func(*Pools)) {
 		f(childrenPools) // If the current pool is nil, run in the current thread
 		return
 	}
-	p.pools[0].Submit(func() { f(childrenPools) })
+	err := p.pools[0].Submit(func() { f(childrenPools) })
+	if err != nil {
+		// FIXME have a proper error handling, even if it shouldn't happens, except for some exotic configuration
+		panic(err)
+	}
 }

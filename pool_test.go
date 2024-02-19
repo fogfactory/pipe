@@ -21,7 +21,6 @@ func InitPoolWithOptions(t testing.TB, poolSizes []int, opts ...ants.Option) *pi
 }
 
 func TestPool(t *testing.T) {
-
 	inc := func(i, _ /* for compatibility with lo */ int) int {
 		i++
 		return i
@@ -85,7 +84,7 @@ func TestPool(t *testing.T) {
 		pool := InitPool(t, 10)
 		input := lo.Range(10)
 		in := lo.SliceToChannel(0, input)
-		do := func(p *pipe.Pools, i int) int {
+		do := func(_ *pipe.Pools, i int) int {
 			return inc(i, 0)
 		}
 
