@@ -156,7 +156,7 @@ func ExampleEngine() {
 	}
 
 	engine := NewEngineBuilder().
-		PoolSizes(0, 2). // The first pool should be 0 or 1 to keep output lines order. Second pool doesn't have any effect since there is no differencies between subjob output
+		PoolSizes(0, 2). // The first pool should be 0 or 1 to keep output lines order. Second pool doesn't have any effect since there is no differences between subjob output
 		Processor(mockproc[Job]).
 		Processor(mockproc[Job]).
 		Split(split).
