@@ -1,6 +1,7 @@
 package pipe_test
 
 import (
+	"sync"
 	"testing"
 	"time"
 
@@ -10,13 +11,12 @@ import (
 	"github.com/samber/lo"
 )
 
-// identity defines a simple helper function, which just return the input and do nothing
-func identity[T any](p *pipe.Pools, b T) T {
+// identity defines a simple helper function, which just return the input and do nothing.
+func identity[T any](_ *pipe.Pools, b T) T {
 	return b
 }
 
 func TestProcesses(t *testing.T) {
-
 	type Main struct {
 		init   int
 		result int
@@ -27,15 +27,16 @@ func TestProcesses(t *testing.T) {
 
 	t.Run("panic_invalid_dispatcher", func(t *testing.T) {
 		// Arrange
+		var mutex sync.Mutex
 		var panicResult any
-		pool := InitPoolWithOptions(t, []int{1}, ants.WithPanicHandler(func(i interface{}) { panicResult = i }))
+		pool := InitPoolWithOptions(t, []int{1}, ants.WithPanicHandler(func(i interface{}) { mutex.Lock(); defer mutex.Unlock(); panicResult = i }))
 		input := lo.Range(10)
 		in := lo.SliceToChannel(0, input)
-		mainProc := func(pool *pipe.Pools, i int) int { return i }
+		mainProc := func(_ *pipe.Pools, i int) int { return i }
 		dispatcher, _ := pipe.NewDispatch(func(parent int, in chan<- int) {
 			in <- parent // produce two childs
 			in <- parent
-		}, func(parent int, out <-chan int) int {
+		}, func(_ int, out <-chan int) int {
 			return <-out // consume only one child
 		})
 		mainProc = pipe.Wrap(mainProc, dispatcher)
@@ -44,6 +45,8 @@ func TestProcesses(t *testing.T) {
 		pipe.Run(pool, in, mainProc)
 
 		// Assert
+		mutex.Lock()
+		defer mutex.Unlock()
 		td.CmpContains(t, panicResult, "invalid dispatcher merge int into int, leaked goroutine")
 	})
 
@@ -53,7 +56,7 @@ func TestProcesses(t *testing.T) {
 		in := lo.SliceToChannel(0, []Main{{init: 10}})
 		mainProc := pipe.Link(pipe.AsPoolProcesses(
 			func(m Main) Main {
-				m.init = m.init * 2
+				m.init *= 2
 				return m
 			},
 			func(m Main) Main {
@@ -152,7 +155,7 @@ func TestProcesses(t *testing.T) {
 		// Arrange
 		pool := InitPool(t, 1, 0) // childs are handled synchroneously with parent
 		in := lo.SliceToChannel(0, []Main{{init: 10}})
-		dispatcher, _ := pipe.NewDispatch(func(parent Main, in chan<- Branch) {
+		dispatcher, _ := pipe.NewDispatch(func(_ Main, in chan<- Branch) {
 			in <- Branch{}
 			in <- Branch{}
 		}, func(parent Main, out <-chan Branch) Main {
@@ -210,7 +213,6 @@ func TestProcesses(t *testing.T) {
 }
 
 func TestDispatcher(t *testing.T) {
-
 	t.Run("error_invalid_new_dispatcher", func(t *testing.T) {
 		// Arrange
 		var nilSplit pipe.Split[int, string]
@@ -226,10 +228,10 @@ func TestDispatcher(t *testing.T) {
 
 	t.Run("success_new_dispatcher", func(t *testing.T) {
 		// Arrange
-		split := func(parent string, in chan<- string) {
+		split := func(_ string, _ chan<- string) {
 			// placeholder
 		}
-		merge := func(parent string, out <-chan string) string {
+		merge := func(parent string, _ <-chan string) string {
 			return parent // placeholder
 		}
 

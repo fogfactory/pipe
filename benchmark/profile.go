@@ -2,7 +2,6 @@ package benchmark
 
 import (
 	"fmt"
-
 	"math"
 	"os"
 	"runtime/pprof"
@@ -13,12 +12,12 @@ import (
 	"github.com/samber/lo"
 )
 
-// profilepipe generate a profile file for anostomosis. It will be outputed as pipe_{date}_in{childRatio}_{poolsizes}.prof
+// profilepipe generate a profile file. It will be outputted as pipe_{date}_in{childRatio}_{poolsizes}.prof.
 //
-// - childRatio Number of childs generated at each branching
-// - poolSizes Pool sizes. Its length is also used to define sub branch depth
+// - childRatio Number of childs generated at each branching.
+// - poolSizes Pool sizes. Its length is also used to define sub branch depth.
 //
-// use pprof to read the file (go install github.com/google/pprof@latest)
+// use pprof to read the file (go install github.com/google/pprof@latest).
 func Profile(childRatio int, poolSizes ...int) {
 	// Profile file
 	f, err := os.Create(fmt.Sprintf("pipe_%s_in%d_%s.prof",
@@ -60,7 +59,7 @@ func Profile(childRatio int, poolSizes ...int) {
 
 	// Start profiling
 	func() {
-		pprof.StartCPUProfile(f)
+		_ = pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
 
 		// Run pipe

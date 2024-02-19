@@ -1,0 +1,102 @@
+name: Run tests
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '**.yml'
+      - '**.yaml'
+      - 'examples/*'
+      - '!.github/workflows/test.yml'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '**.yml'
+      - '**.yaml'
+      - 'examples/*'
+      - '!.github/workflows/test.yml'
+
+jobs:
+  lint:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+    name: Run golangci-lint
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '^1.21'
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup and run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          args: --timeout 5m -v -E gofumpt -E gocritic -E misspell -E revive -E godot
+  test:
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        go: 
+          - '1.21'
+        os: 
+          - ubuntu-latest
+    name: Go ${{ matrix.go }} @ ${{ matrix.os }}
+    runs-on: ${{ matrix.os}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Print Go environment
+        id: go-env
+        run: |
+          printf "Using go at: $(which go)\n"
+          printf "Go version: $(go version)\n"
+          printf "\n\nGo environment:\n\n"
+          go env
+          printf "\n\nSystem environment:\n\n"
+          env
+          # Calculate the short SHA1 hash of the git commit
+          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "GO_CACHE=$(go env GOCACHE)" >> $GITHUB_OUTPUT
+
+      - name: Cache go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.go-env.outputs.GO_CACHE }}
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-${{ matrix.go }}-go-ci-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.go }}-go-ci
+
+      - name: Run unit tests and integrated tests
+        run: go test -v -race -coverprofile="codecov.report" -covermode=atomic
+
+      - name: Upload code coverage report to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./codecov.report
+          flags: unittests
+          slug: Ezian/pipe
+          fail_ci_if_error: true
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
