@@ -54,12 +54,12 @@ type Engine struct {
 	proc pipe.PoolProcess[Job]
 }
 
-// Job defines the parent job. It will be dispatched in several subjob. It is defined here as an interface for convenience but could be of any type.
+// Job defines the parent job. It will be dispatched in several subjob. It is defined here as an struct for convenience but could be of any type.
 type Job struct {
 	childCount int
 }
 
-// SubJob defines a specific. It is the most atomic item of a rating engine. It is defined here as an interface for convenience but could be of any type.
+// SubJob defines a job which will run as a sub workload of its parent job. In this example it is a struct but it could be any type.
 type SubJob struct{}
 
 // JobBuilder defines the base builder for the whole engine.
