@@ -11,9 +11,9 @@ import (
 )
 
 /*
-This file contains an example of use pipe to build a Rating Engine.
+This file contains an example of use pipe to build some engine which deals with any data.
 
-This rating Engine take "Job" as input and dispatch "SubJob".
+This engine take "Job" as input and dispatch "SubJob".
 
 It shows how to define builders to make a clean definition of this kind of engine.
 */
