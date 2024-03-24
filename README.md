@@ -1,9 +1,9 @@
 # pipe
 **A multi pool pipeline for heavy multiprocessing in golang****
 
-[![Run tests](https://github.com/Ezian/pipe/actions/workflows/test.yml/badge.svg)](https://github.com/Ezian/pipe/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/Ezian/pipe/graph/badge.svg?token=TPB68RCES0)](https://codecov.io/gh/Ezian/pipe)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Ezian/pipe)](https://goreportcard.com/report/github.com/Ezian/pipe)
+[![Run tests](https://github.com/fogfactory/pipe/actions/workflows/test.yml/badge.svg)](https://github.com/fogfactory/pipe/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/fogfactory/pipe/graph/badge.svg?token=TPB68RCES0)](https://codecov.io/gh/fogfactory/pipe)
+[![Go Report Card](https://goreportcard.com/badge/github.com/fogfactory/pipe)](https://goreportcard.com/report/github.com/fogfactory/pipe)
 
 ## Introduction
 
@@ -47,7 +47,7 @@ However, these are general consideration. As for any performance tuning, you sho
 ## Installation
 
 ```sh
-go get -u github.com/ezian/pipe
+go get -u github.com/fogfactory/pipe
 ```
 
 ## How to use
