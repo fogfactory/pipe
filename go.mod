@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.4
 
 require (
-	github.com/maxatome/go-testdeep v1.13.0
+	github.com/maxatome/go-testdeep v1.14.0
 	github.com/panjf2000/ants/v2 v2.9.1
 	github.com/samber/lo v1.39.0
 )
