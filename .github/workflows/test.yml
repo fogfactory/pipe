@@ -95,7 +95,7 @@ jobs:
         with:
           file: ./codecov.report
           flags: unittests
-          slug: Ezian/pipe
+          slug: fogfactory/pipe
           fail_ci_if_error: true
           verbose: true
         env:
