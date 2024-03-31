@@ -1,4 +1,4 @@
-module github.com/ezian/pipe
+module github.com/fogfactory/pipe
 
 go 1.21
 

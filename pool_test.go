@@ -3,7 +3,7 @@ package pipe_test
 import (
 	"testing"
 
-	"github.com/ezian/pipe"
+	"github.com/fogfactory/pipe"
 	"github.com/maxatome/go-testdeep/td"
 	"github.com/panjf2000/ants/v2"
 	"github.com/samber/lo"

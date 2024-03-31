@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ezian/pipe"
+	"github.com/fogfactory/pipe"
 	"github.com/samber/lo"
 )
 

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ezian/pipe"
+	"github.com/fogfactory/pipe"
 	"github.com/panjf2000/ants/v2"
 	"github.com/samber/lo"
 )
