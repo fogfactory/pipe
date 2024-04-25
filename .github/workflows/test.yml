@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup and run golangci-lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@v5
         with:
           version: latest
           args: --timeout 5m -v -E gofumpt -E gocritic -E misspell -E revive -E godot
