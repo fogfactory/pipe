@@ -2,7 +2,7 @@ module github.com/fogfactory/pipe
 
 go 1.21
 
-toolchain go1.23.1
+toolchain go1.23.2
 
 require (
 	github.com/maxatome/go-testdeep v1.14.0
