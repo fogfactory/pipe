@@ -7,12 +7,12 @@ toolchain go1.23.2
 require (
 	github.com/maxatome/go-testdeep v1.14.0
 	github.com/panjf2000/ants/v2 v2.11.4
-	github.com/samber/lo v1.47.0
+	github.com/samber/lo v1.52.0
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848 // indirect
 	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 )
