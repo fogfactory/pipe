@@ -78,7 +78,7 @@ jobs:
           echo "GO_CACHE=$(go env GOCACHE)" >> $GITHUB_OUTPUT
 
       - name: Cache go modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ steps.go-env.outputs.GO_CACHE }}
