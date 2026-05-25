@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/maxatome/go-testdeep v1.15.0
-	github.com/panjf2000/ants/v2 v2.12.0
+	github.com/panjf2000/ants/v2 v2.12.1
 	github.com/samber/lo v1.53.0
 )
 
